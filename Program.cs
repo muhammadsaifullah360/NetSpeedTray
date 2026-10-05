@@ -1315,7 +1315,7 @@ namespace NetSpeedTray
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false; MinimizeBox = false;
             StartPosition = FormStartPosition.CenterScreen;
-            ClientSize = new Size(360, 430);
+            ClientSize = new Size(410, 430);
             Font = new Font("Segoe UI", 9f);
             try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
             Build();
@@ -1330,8 +1330,20 @@ namespace NetSpeedTray
         }
 
         int _y = 16;
-        Label AddLabel(string t) { Label l = new Label(); l.Text = t; l.AutoSize = true; l.Location = new Point(16, _y + 4); Controls.Add(l); return l; }
-        void Row(string label, Control c) { AddLabel(label); c.Location = new Point(170, _y); c.Width = 172; Controls.Add(c); _y += 34; }
+        Label AddLabel(string t)
+        {
+            Label l = new Label();
+            l.Text = t; l.AutoSize = false; l.Size = new Size(196, 22);
+            l.TextAlign = ContentAlignment.MiddleLeft; l.Location = new Point(16, _y + 2);
+            Controls.Add(l); return l;
+        }
+        void Row(string label, Control c)
+        {
+            AddLabel(label);
+            c.Location = new Point(220, _y);
+            c.Width = ClientSize.Width - 220 - 16;
+            Controls.Add(c); _y += 34;
+        }
 
         void Build()
         {
@@ -1345,7 +1357,23 @@ namespace NetSpeedTray
             _icon.SelectedIndex = (int)_cfg.Icon; Row("Tray icon", _icon);
 
             _cap = new TextBox(); _cap.Text = _cfg.MonthlyCapGB > 0 ? _cfg.MonthlyCapGB.ToString(CultureInfo.InvariantCulture) : "";
-            Row("Monthly data cap (GB, 0 = off)", _cap);
+            // Accept digits and a single decimal point only.
+            _cap.KeyPress += (s, e) =>
+            {
+                char ch = e.KeyChar;
+                if (char.IsControl(ch)) return;
+                if (ch == '.') { if (((TextBox)s).Text.Contains(".")) e.Handled = true; return; }
+                if (!char.IsDigit(ch)) e.Handled = true;
+            };
+            // Sanitize pasted text too.
+            _cap.TextChanged += (s, e) =>
+            {
+                TextBox t = (TextBox)s;
+                string clean = ""; bool dot = false;
+                foreach (char c in t.Text) { if (char.IsDigit(c)) clean += c; else if (c == '.' && !dot) { clean += c; dot = true; } }
+                if (clean != t.Text) { int pos = t.SelectionStart - (t.Text.Length - clean.Length); t.Text = clean; t.SelectionStart = Math.Max(0, Math.Min(clean.Length, pos)); }
+            };
+            Row("Monthly cap (GB, 0 = off)", _cap);
 
             _ping = new CheckBox(); _ping.Text = "Show ping / latency"; _ping.Checked = _cfg.PingEnabled; _ping.AutoSize = true;
             _ping.Location = new Point(16, _y); Controls.Add(_ping); _y += 28;
@@ -1403,6 +1431,7 @@ namespace NetSpeedTray
             Capture(BuildPopup(ThemeMode.Light, cfg), Path.Combine(dir, "popup-light.png"));
             Capture(BuildSpeed(ThemeMode.Dark), Path.Combine(dir, "speedtest-dark.png"));
             Capture(BuildSpeed(ThemeMode.Light), Path.Combine(dir, "speedtest-light.png"));
+            Capture(new SettingsForm(new Settings(), Palette.For(ThemeMode.Dark), null), Path.Combine(dir, "settings-dark.png"));
         }
 
         static PopupForm BuildPopup(ThemeMode t, Settings cfg)
