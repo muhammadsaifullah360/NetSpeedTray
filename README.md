@@ -18,7 +18,7 @@ out of the box (uses the .NET Framework already built into Windows).
 | | |
 |---|---|
 | 📊 **Live speed on the tray icon** | Download (green) over upload (blue), updated every second — visible at a glance like the Wi-Fi icon. |
-| 🖱️ **Elegant popup** | Left-click the tray icon for big readouts, the **network name**, a live sparkline, and session totals. |
+| 🖱️ **Elegant popup** | Left-click the tray icon for big readouts, the **network name**, a live sparkline, and **data used on the current network** (resets automatically when you disconnect or switch networks). |
 | 📶 **Wi-Fi *and* Ethernet** | Automatically follows whichever adapter carries your internet. Shows a **Wi-Fi glyph + SSID** on wireless, or an **Ethernet glyph + adapter name** when wired. |
 | ⚡ **Mbps speed test** | Built-in download test (Cloudflare endpoint) with live Mbps, **peak** and **average** — great for checking your internet plan. |
 | 🎛️ **Configurable units** | Auto (bytes), Auto (bits), KB/s, MB/s, Kbps, Mbps. |

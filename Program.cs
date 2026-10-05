@@ -139,6 +139,8 @@ namespace NetSpeedTray
         public bool Connected;
         public long SessionDown;
         public long SessionUp;
+        public long ConnDown;   // data used since connecting to the current network
+        public long ConnUp;
     }
 
     class Monitor
@@ -147,6 +149,7 @@ namespace NetSpeedTray
         readonly Dictionary<string, Counter> _prev = new Dictionary<string, Counter>();
         readonly Stopwatch _sw = new Stopwatch();
         long _sessionDown, _sessionUp;
+        long _connDown, _connUp;   // reset when the active network changes/drops
         string _primaryId;
         string _networkName = "Disconnected";
         string _adapterName = "";
@@ -192,6 +195,8 @@ namespace NetSpeedTray
                         up = dTx / dt;
                         _sessionDown += dRx;
                         _sessionUp += dTx;
+                        _connDown += dRx;
+                        _connUp += dTx;
                         connected = true;
                     }
                     c.Rx = rx; c.Tx = tx;
@@ -208,6 +213,8 @@ namespace NetSpeedTray
             s.IsWireless = _wireless;
             s.SessionDown = _sessionDown;
             s.SessionUp = _sessionUp;
+            s.ConnDown = _connDown;
+            s.ConnUp = _connUp;
             return s;
         }
 
@@ -230,6 +237,13 @@ namespace NetSpeedTray
                     if (ni.NetworkInterfaceType == NetworkInterfaceType.Wireless80211) { best = ni; break; }
                 }
                 catch { }
+            }
+
+            string newId = best == null ? null : best.Id;
+            if (newId != _primaryId)
+            {
+                // Active network changed or dropped: reset the per-connection usage.
+                _connDown = 0; _connUp = 0;
             }
 
             if (best == null)
@@ -493,7 +507,7 @@ namespace NetSpeedTray
 
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(new ToolStripMenuItem("About", null, (s, e) =>
-                MessageBox.Show("NetSpeedTray  v1.0\nLightweight live network speed monitor.\n\nGreen = download, Blue = upload.\nLeft-click the tray icon for details.\n\nMade by Devoryn Labs",
+                MessageBox.Show("NetSpeedTray  v1.1\nLightweight live network speed monitor.\n\nGreen = download, Blue = upload.\nLeft-click the tray icon for details.\n\nMade by Devoryn Labs",
                     "About NetSpeedTray", MessageBoxButtons.OK, MessageBoxIcon.Information)));
             menu.Items.Add(new ToolStripMenuItem("Exit", null, (s, e) => ExitApp()));
             return menu;
@@ -653,7 +667,8 @@ namespace NetSpeedTray
 
             using (Font tf = new Font("Segoe UI", 8.25f))
             using (Brush tb = new SolidBrush(_p.Dim))
-                g.DrawString("Session  ↓ " + Fmt.Bytes(_s.SessionDown) + "   ↑ " + Fmt.Bytes(_s.SessionUp),
+                g.DrawString("Used  ↓ " + Fmt.Bytes(_s.ConnDown) + "   ↑ " + Fmt.Bytes(_s.ConnUp)
+                    + "   (Σ " + Fmt.Bytes(_s.ConnDown + _s.ConnUp) + ")",
                     tf, tb, pad, gr.Bottom + 6);
 
             using (Pen bp = new Pen(_p.Border))
@@ -1047,6 +1062,8 @@ namespace NetSpeedTray
                 s.UpBps = u < 0 ? 0 : u;
                 s.SessionDown = 3456000000L;
                 s.SessionUp = 612000000L;
+                s.ConnDown = 3456000000L;
+                s.ConnUp = 612000000L;
                 pf.Push(s, cfg);
             }
             return pf;
