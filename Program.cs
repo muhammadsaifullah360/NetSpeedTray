@@ -415,19 +415,51 @@ namespace NetSpeedTray
     }
 
     // --------------------------------------------------------- Background tools
+    static class Net
+    {
+        // A browser-like UA avoids 403s from CDNs with bot filtering.
+        public const string UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+
+        // Tried in order; first one that responds wins.
+        public static readonly string[] TestUrls =
+        {
+            "https://speed.cloudflare.com/__down?bytes=300000000",
+            "https://speed.hetzner.de/100MB.bin",
+            "http://ipv4.download.thinkbroadband.com/100MB.zip"
+        };
+
+        public static WebResponse OpenTest(out string used)
+        {
+            foreach (string u in TestUrls)
+            {
+                try
+                {
+                    HttpWebRequest req = (HttpWebRequest)WebRequest.Create(u);
+                    req.UserAgent = UA; req.Accept = "*/*";
+                    req.Timeout = 10000; req.ReadWriteTimeout = 15000;
+                    req.AllowAutoRedirect = true; req.KeepAlive = true;
+                    WebResponse resp = req.GetResponse();
+                    used = u; return resp;
+                }
+                catch { }
+            }
+            used = null; return null;
+        }
+    }
+
     static class SpeedTest
     {
-        const string Url = "https://speed.cloudflare.com/__down?bytes=250000000";
         public static bool Run(double maxSeconds, out double avgMbps, out double peakMbps)
         {
             avgMbps = 0; peakMbps = 0;
             try
             {
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Url);
-                req.Timeout = 15000; req.ReadWriteTimeout = 15000; req.UserAgent = "NetSpeedTray/" + App.Version;
+                string used;
+                WebResponse resp = Net.OpenTest(out used);
+                if (resp == null) return false;
                 long total = 0, prevB = 0; double prevT = 0;
                 Stopwatch sw = Stopwatch.StartNew();
-                using (WebResponse resp = req.GetResponse())
+                using (resp)
                 using (Stream st = resp.GetResponseStream())
                 {
                     byte[] buf = new byte[65536]; int n;
@@ -1143,7 +1175,6 @@ namespace NetSpeedTray
         readonly double[] _hist = new double[N];
         double _curMbps, _peakMbps, _avgMbps;
         string _status = "Idle · showing live usage";
-        const string TestUrl = "https://speed.cloudflare.com/__down?bytes=300000000";
 
         public SpeedTestForm(Palette pal)
         {
@@ -1214,10 +1245,10 @@ namespace NetSpeedTray
         {
             try
             {
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(TestUrl);
-                req.Timeout = 15000; req.ReadWriteTimeout = 15000; req.AllowAutoRedirect = true;
-                req.UserAgent = "NetSpeedTray/" + App.Version; req.KeepAlive = true;
-                using (WebResponse resp = req.GetResponse())
+                string used;
+                WebResponse resp = Net.OpenTest(out used);
+                if (resp == null) { SetStatus("Error: could not reach any test server"); _running = false; return; }
+                using (resp)
                 using (Stream st = resp.GetResponseStream())
                 {
                     byte[] buf = new byte[65536]; int n;
