@@ -17,14 +17,19 @@ out of the box (uses the .NET Framework already built into Windows).
 
 | | |
 |---|---|
-| 📊 **Live speed on the tray icon** | Download (green) over upload (blue), updated every second — visible at a glance like the Wi-Fi icon. |
-| 🖱️ **Elegant popup** | Left-click the tray icon for big readouts, the **network name**, a live sparkline, and **data used on the current network** (resets automatically when you disconnect or switch networks). |
-| 📶 **Wi-Fi *and* Ethernet** | Automatically follows whichever adapter carries your internet. Shows a **Wi-Fi glyph + SSID** on wireless, or an **Ethernet glyph + adapter name** when wired. |
-| ⚡ **Mbps speed test** | Built-in download test (Cloudflare endpoint) with live Mbps, **peak** and **average** — great for checking your internet plan. |
-| 🎛️ **Configurable units** | Auto (bytes), Auto (bits), KB/s, MB/s, Kbps, Mbps. |
-| 🌙 **Dark / Light themes** | One-click toggle; your choice is remembered. |
-| 🚀 **Run at startup** | Optional — launches with Windows. |
-| 🪶 **Lightweight** | ~45 KB exe, a few MB of RAM, negligible CPU. |
+| 📊 **Live speed on the tray icon** | Download (green) over upload (blue), updated every second — visible at a glance like the Wi-Fi icon. Two-line or download-only mode. |
+| 🖱️ **Elegant popup** | Left-click for big readouts, the **network name**, live graph, **ping/latency**, data used on this network, and **today / this-month totals**. |
+| 📶 **Wi-Fi *and* Ethernet** | Follows whichever adapter carries your internet — **Wi-Fi glyph + SSID** on wireless, **Ethernet glyph + adapter name** when wired. |
+| 📈 **Daily & monthly usage** | Tracks data per day/month and keeps the history on disk — plus per-connection usage that resets when you disconnect. |
+| 🚨 **Data-cap alert** | Set a monthly limit; get a tray notification at 80% and 100%. |
+| 📡 **Ping / latency** | Live ping to a host you choose (default `1.1.1.1`), colour-coded. |
+| ⚡ **Mbps speed test** | Built-in download test with live Mbps, **peak** and **average**. Optional **scheduled** auto-tests logged to CSV. |
+| 🖥️ **Floating desktop widget** | Optional always-on-top mini readout you can drag anywhere. |
+| 🔔 **Connect / disconnect toasts** | Notifies when your network drops or reconnects. |
+| 🌗 **Auto / Dark / Light theme** | Follows Windows automatically, or pick one. |
+| ⚙️ **Settings window** | All options in one place; `netsh`-free config stored in `%APPDATA%`. |
+| ⬆️ **Update check** | Checks GitHub Releases on launch and notifies when a newer build exists. |
+| 🚀 **Run at startup** · 🪶 **Lightweight** | Optional autostart; ~64 KB exe, a few MB RAM, negligible CPU. |
 
 <p align="center">
   <img src="screenshots/speedtest-dark.png" width="440" alt="Speed test (dark)">
