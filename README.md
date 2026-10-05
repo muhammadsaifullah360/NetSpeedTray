@@ -64,3 +64,7 @@ That runs the .NET Framework `csc.exe` to produce `NetSpeedTray.exe`. Edit
 ## License
 
 MIT — do whatever you like.
+
+---
+
+<p align="center"><sub>Made by <b>Devoryn Labs</b></sub></p>

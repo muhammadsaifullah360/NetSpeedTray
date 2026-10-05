@@ -493,7 +493,7 @@ namespace NetSpeedTray
 
             menu.Items.Add(new ToolStripSeparator());
             menu.Items.Add(new ToolStripMenuItem("About", null, (s, e) =>
-                MessageBox.Show("NetSpeedTray\nLightweight live network speed monitor.\n\nGreen = download, Blue = upload.\nLeft-click the tray icon for details.",
+                MessageBox.Show("NetSpeedTray  v1.0\nLightweight live network speed monitor.\n\nGreen = download, Blue = upload.\nLeft-click the tray icon for details.\n\nMade by Devoryn Labs",
                     "About NetSpeedTray", MessageBoxButtons.OK, MessageBoxIcon.Information)));
             menu.Items.Add(new ToolStripMenuItem("Exit", null, (s, e) => ExitApp()));
             return menu;
