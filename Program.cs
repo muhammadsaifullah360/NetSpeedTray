@@ -420,12 +420,13 @@ namespace NetSpeedTray
         // A browser-like UA avoids 403s from CDNs with bot filtering.
         public const string UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
-        // Tried in order; first one that responds wins.
+        // Tried in order; first one that responds wins. (Cloudflare 403s on large
+        // byte counts, so it is used only as a smaller last-resort source.)
         public static readonly string[] TestUrls =
         {
-            "https://speed.cloudflare.com/__down?bytes=300000000",
-            "https://speed.hetzner.de/100MB.bin",
-            "http://ipv4.download.thinkbroadband.com/100MB.zip"
+            "http://speedtest.tele2.net/100MB.zip",
+            "https://proof.ovh.net/files/100Mb.dat",
+            "https://speed.cloudflare.com/__down?bytes=25000000"
         };
 
         public static WebResponse OpenTest(out string used)
